@@ -1,0 +1,2 @@
+C:/Users/Samuel_Ramos/Documents/BreakForLove_2.3/android/app/.cxx/Debug/1v5g352s/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Samuel_Ramos/Documents/BreakForLove_2.3/android/app/.cxx/Debug/1v5g352s/armeabi-v7a/CMakeFiles/rebuild_cache.dir
