@@ -20,13 +20,15 @@ class BottomNavBar extends StatelessWidget {
         child: GNav(
           selectedIndex: currentIndex,
           onTabChange: onTabChange,
-          color: Colors.black, // Cor dos ícones inativos
-          activeColor: Colors.black, // Cor dos ícones ativos
-          tabBackgroundColor: Colors.pink.shade100,// Cor do fundo ativo
-          padding: const EdgeInsets.all(13), // Mantendo o padding original
-          gap: 5, // Espaço entre ícones e textos
+          color: Colors.black,
+          activeColor: Colors.black,
+          tabBackgroundColor: Colors.pink.shade100,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Aumentei o padding para maior área de toque
+          gap: 8, // Espaçamento ligeiramente maior entre os ícones e textos
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
           tabs: const [
-            GButton(icon: Icons.home, text: 'Inicio'),
+            GButton(icon: Icons.home, text: 'Início'),
             GButton(icon: Icons.notifications, text: 'Notificações'),
             GButton(icon: Icons.calendar_month, text: 'Calendário'),
             GButton(icon: Icons.account_circle, text: 'Perfil'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -7,19 +8,18 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage>
-    with SingleTickerProviderStateMixin {
+class _RegisterPageState extends State<RegisterPage> {
+  final PageController _pageController = PageController(initialPage: 1);
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-
   bool _visible = false;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 300), () {
+    Future.delayed(Duration(milliseconds: 200), () {
       setState(() => _visible = true);
     });
   }
@@ -27,54 +27,70 @@ class _RegisterPageState extends State<RegisterPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedContainer(
-        duration: Duration(milliseconds: 500),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color.fromARGB(255, 243, 33, 159),
-              const Color.fromARGB(255, 248, 203, 230),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {},
+        children: [
+          const LoginPage(), // Tela de Login
+          _buildRegisterScreen(context), // Tela de Registro
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRegisterScreen(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.pink.shade100,
+            const Color.fromARGB(255, 248, 203, 230),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Center(
-          child: AnimatedOpacity(
-            duration: Duration(milliseconds: 800),
-            opacity: _visible ? 1 : 0,
-            child: AnimatedSlide(
-              duration: Duration(milliseconds: 800),
-              offset: _visible ? Offset(0, 0) : Offset(0, 0.3),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 30),
-                      // Logo da aplicação
-                      Image.asset(
-                        'assets/logoApp.png',
-                        width: 280,
-                        height: 200,
+      ),
+      child: Center(
+        child: AnimatedOpacity(
+          duration: Duration(milliseconds: 500),
+          opacity: _visible ? 1 : 0,
+          child: AnimatedSlide(
+            duration: Duration(milliseconds: 400),
+            offset: _visible ? Offset(0, 0) : Offset(0, 0.3),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    SizedBox(height: 30),
+                    Image.asset(
+                      'assets/logoApp.png',
+                      width: 280,
+                      height: 200,
+                    ),
+                    Text(
+                      'Crie sua Conta',
+                      style: TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      Text(
-                        'Crie sua Conta',
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      _RegisterForm(
-                        nameController: _nameController,
-                        emailController: _emailController,
-                        passwordController: _passwordController,
-                        confirmPasswordController: _confirmPasswordController,
-                      ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: 30),
+                    _RegisterForm(
+                      nameController: _nameController,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      confirmPasswordController: _confirmPasswordController,
+                      onLoginTap: () {
+                        _pageController.previousPage(
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -90,12 +106,14 @@ class _RegisterForm extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
+  final VoidCallback onLoginTap;
 
   const _RegisterForm({
     required this.nameController,
     required this.emailController,
     required this.passwordController,
     required this.confirmPasswordController,
+    required this.onLoginTap,
   });
 
   @override
@@ -170,8 +188,7 @@ class _RegisterForm extends StatelessWidget {
                   );
                   return;
                 }
-
-                // Aqui você pode adicionar lógica de cadastro
+                // Aqui pode adicionar lógica de cadastro
               },
               child: Text(
                 'Registrar',
@@ -179,9 +196,7 @@ class _RegisterForm extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: onLoginTap,
               child: Text(
                 'Já tem uma conta? Voltar ao login',
                 style: TextStyle(

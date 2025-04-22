@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
+import 'home_page.dart';
 import 'register_page.dart';
 
-// Tela de Login com animação e layout responsivo
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -10,78 +11,74 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Controladores dos campos
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final PageController _pageController = PageController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
-  bool _visible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Ativa a animação após pequeno delay
-    Future.delayed(Duration(milliseconds: 300), () {
-      setState(() => _visible = true);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundo com gradiente animado
-      body: AnimatedContainer(
-        duration: Duration(milliseconds: 500),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color.fromARGB(255, 243, 33, 159),
-              const Color.fromARGB(255, 248, 203, 230),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(), // Evita deslize manual entre telas
+        children: [
+          _buildLoginScreen(context), // Tela de Login
+          const RegisterPage(),        // Tela de Cadastro
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoginScreen(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.pink.shade100, const Color(0xFFF8CBE6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        // Evita overflow em telas pequenas
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 800),
-              opacity: _visible ? 1 : 0,
-              child: AnimatedSlide(
-                duration: Duration(milliseconds: 800),
-                offset: _visible ? Offset(0, 0) : Offset(0, 0.3),
-                child: Column(
-                  children: [
-                    SizedBox(height: 30),
-                    Image.asset(
-                      'assets/logoApp.png',
-                      width: 280,
-                      height: 200,
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Mais tempo com quem realmente importa.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    _LoginForm(
-                      usernameController: _usernameController,
-                      passwordController: _passwordController,
-                      rememberMe: _rememberMe,
-                      onRememberChanged: (value) {
-                        setState(() => _rememberMe = value);
-                      },
-                    ),
-                  ],
-                ),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              Image.asset(
+                'assets/logoApp.png',
+                width: 280,
+                height: 200,
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported, size: 100),
               ),
-            ),
+              const SizedBox(height: 10),
+              const Text(
+                'Mais tempo com quem realmente importa.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              const SizedBox(height: 30),
+              _LoginForm(
+                usernameController: _usernameController,
+                passwordController: _passwordController,
+                rememberMe: _rememberMe,
+                onRememberChanged: (value) => setState(() => _rememberMe = value),
+                onRegisterTap: () {
+                  _pageController.nextPage(
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                onLoginTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
@@ -89,18 +86,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-// Formulário da tela de login
 class _LoginForm extends StatelessWidget {
   final TextEditingController usernameController;
   final TextEditingController passwordController;
   final bool rememberMe;
   final Function(bool) onRememberChanged;
+  final VoidCallback onRegisterTap;
+  final VoidCallback onLoginTap;
 
   const _LoginForm({
+    super.key,
     required this.usernameController,
     required this.passwordController,
     required this.rememberMe,
     required this.onRememberChanged,
+    required this.onRegisterTap,
+    required this.onLoginTap,
   });
 
   @override
@@ -113,106 +114,38 @@ class _LoginForm extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(height: 20),
-            // Campo: E-mail
+            const SizedBox(height: 20),
             TextField(
               controller: usernameController,
               decoration: InputDecoration(
                 labelText: 'E-mail',
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                prefixIcon: const Icon(Icons.person),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
               ),
             ),
-            SizedBox(height: 12),
-            // Campo: Senha
+            const SizedBox(height: 12),
             TextField(
               controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Senha',
-                prefixIcon: Icon(Icons.lock),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                prefixIcon: const Icon(Icons.lock),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
               ),
             ),
-            // Lembrar senha e recuperar
-            Row(
-              children: [
-                Checkbox(
-                  value: rememberMe,
-                  onChanged: (value) => onRememberChanged(value ?? false),
-                ),
-                Text(
-                  'Lembrar senha',
-                  style: TextStyle(fontSize: 10, color: Colors.blue),
-                ),
-                Spacer(),
-                TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Recuperar Senha'),
-                        content: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Digite seu e-mail',
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Instruções enviadas para o e-mail!'),
-                                ),
-                              );
-                            },
-                            child: Text('Enviar'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text('Cancelar'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'Esqueceu a senha?',
-                    style: TextStyle(fontSize: 10, color: Colors.blue),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            // Botão: Login
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 230, 65, 70),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              onPressed: () {
-                // Aqui você pode validar o login
-              },
-              child: Text(
-                'Login',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const MainPage()),
+            );
+          },
+          child: const Text('Login'),
+        ),
             TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterPage()),
-                );
-              },
-              child: Text(
+              onPressed: onRegisterTap,
+              child: const Text(
                 'Criar conta',
                 style: TextStyle(fontSize: 12, color: Colors.blueAccent),
               ),
