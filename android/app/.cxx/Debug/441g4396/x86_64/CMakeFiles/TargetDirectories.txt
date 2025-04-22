@@ -1,0 +1,2 @@
+C:/Users/Samuel_Ramos/Documents/BreakForLove/android/app/.cxx/Debug/441g4396/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Samuel_Ramos/Documents/BreakForLove/android/app/.cxx/Debug/441g4396/x86_64/CMakeFiles/rebuild_cache.dir
